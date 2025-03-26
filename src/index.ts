@@ -3,7 +3,8 @@ import { computeWorkersData } from './utils/workers';
 import { fetchBlockHeight, fetchChainDiff, fetchWorkers } from './utils/data';
 import { ENV } from './utils/env';
 import express from 'express';
-
+import { heartBeat } from './utils/beat';
+import { ONE_HOUR } from './utils/time';
 const app = express();
 
 if (!ENV.TG_TOKEN || !ENV.CHAT_ID) {
@@ -32,8 +33,6 @@ const getMiningStats = async () => {
       fetchChainDiff().catch(() => null),
       fetchBlockHeight().catch(() => null),
     ]);
-
-    console.log('workersRaw', workersRaw);
 
     // Compute workers data
     const workersData = computeWorkersData(workersRaw);
@@ -94,26 +93,26 @@ const sendMiningStats = async () => {
   const message = await getMiningStats();
   if (!message) return;
   console.log('Sending periodic message:', message);
-  // await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
+  await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
 };
 
 // Run immediately and then every hour
 const startSendingStats = async () => {
   await sendMiningStats();
-  setInterval(sendMiningStats, 3600000); // 1 hour in milliseconds
+  setInterval(sendMiningStats, ONE_HOUR);
 };
 
 app.listen(ENV.PORT, () => {
   console.log(`Server is running on port: ${ENV.PORT}`);
 
   startSendingStats();
-  //callSelfBeat();
+  heartBeat();
   // Listen for /stats command
   bot.onText(/\/stats/, async () => {
     const message = await getMiningStats();
     if (!message) return;
     console.log('Sending stats on command:', message);
-    // await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
+    await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
   });
 });
 
