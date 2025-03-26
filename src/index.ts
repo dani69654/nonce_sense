@@ -94,7 +94,7 @@ const sendMiningStats = async () => {
   const message = await getMiningStats();
   if (!message) return;
   console.log('Sending periodic message:', message);
-  //await bot.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' });
+  await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
 };
 
 // Run immediately and then every hour
@@ -113,6 +113,6 @@ app.listen(ENV.PORT, () => {
     const message = await getMiningStats();
     if (!message) return;
     console.log('Sending stats on command:', message);
-    // await bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+    await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
   });
 });
