@@ -94,7 +94,7 @@ const sendMiningStats = async () => {
   const message = await getMiningStats();
   if (!message) return;
   console.log('Sending periodic message:', message);
-  await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
+  // await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
 };
 
 // Run immediately and then every hour
@@ -107,12 +107,16 @@ app.listen(ENV.PORT, () => {
   console.log(`Server is running on port: ${ENV.PORT}`);
 
   startSendingStats();
-
+  //callSelfBeat();
   // Listen for /stats command
   bot.onText(/\/stats/, async () => {
     const message = await getMiningStats();
     if (!message) return;
     console.log('Sending stats on command:', message);
-    await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
+    // await bot.sendMessage(ENV.CHAT_ID!, message, { parse_mode: 'Markdown' });
   });
+});
+
+app.get('/', (_, res) => {
+  res.status(200).send('OK');
 });
