@@ -1,35 +1,4 @@
-export type Worker = {
-  workername: string;
-  hashrate1m: string;
-  hashrate5m: string;
-  hashrate1hr: string;
-  hashrate1d: string;
-  hashrate7d: string;
-  lastshare: number;
-  shares: number;
-  bestshare: number;
-  bestever: number;
-};
-
-export type MiningData = {
-  hashrate1m: string;
-  hashrate5m: string;
-  hashrate1hr: string;
-  hashrate1d: string;
-  hashrate7d: string;
-  lastshare: number;
-  workers: number;
-  shares: number;
-  bestshare: number;
-  bestever: number;
-  authorised: number;
-  worker: Worker[];
-};
-
-export type Workers = {
-  name: string;
-  address: string;
-};
+import { type MiningData } from '../types';
 
 const UNITS: Record<string, number> = {
   T: 1e12,
@@ -38,23 +7,14 @@ const UNITS: Record<string, number> = {
   K: 1e3,
 };
 
-export const convertHashrate = (hashrateStr: string): number => {
+const convertHashrate = (hashrateStr: string) => {
   const match = hashrateStr.match(/^([\d.]+)([TGMK])$/);
   if (!match) return parseFloat(hashrateStr);
   const [, numStr, unit] = match;
   return parseFloat(numStr) * UNITS[unit];
 };
 
-// Do the opposite of the above function
-export const convertHashrateBack = (hashrate: number): string => {
-  for (const unit of ['T', 'G', 'M', 'K']) {
-    const value = hashrate / UNITS[unit];
-    if (value >= 1) return `${value.toFixed(2)}${unit}`;
-  }
-  return hashrate.toFixed(2);
-};
-
-export const computeWorkersData = (data: MiningData[]): MiningData => {
+export const computeWorkersData = (data: MiningData[]) => {
   const aggregated1minHashrate = data.reduce((acc, worker) => {
     return acc + convertHashrate(worker.hashrate1m);
   }, 0);
