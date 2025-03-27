@@ -36,8 +36,12 @@ export const getMiningStats = async () => {
         `*1-Hour Hashrate:* ${oneHourHashrate}`;
     }
 
-    if (blockHeight) message += `\n*Block Height:* ${blockHeight}`;
-    if (difficulty) message += `\n*Network Difficulty:* ${formatNumber(difficulty)}`;
+    if (blockHeight) {
+      message += `\n*Block Height:* ${blockHeight}`;
+    }
+    if (difficulty) {
+      message += `\n*Network Difficulty:* ${formatNumber(difficulty)}`;
+    }
 
     if (difficulty && currentBestDiff >= Number(difficulty)) {
       message =
