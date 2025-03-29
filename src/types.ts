@@ -26,5 +26,4 @@ export type MiningData = {
   bestever: number;
   authorised: number;
   worker: Worker[];
-  offlineWorkers: Worker[];
 };
