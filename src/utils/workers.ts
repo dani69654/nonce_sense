@@ -1,3 +1,4 @@
+import { ENV } from '../cfg/env';
 import { type MiningData } from '../types';
 
 const UNITS: Record<string, number> = {
@@ -5,6 +6,15 @@ const UNITS: Record<string, number> = {
   G: 1e9,
   M: 1e6,
   K: 1e3,
+};
+
+export const EXPECTED_WORKERS = ENV.WORKERS.length;
+
+export const verifyExpectedWorkers = (data: MiningData[]) => {
+  return data.filter((worker) => {
+    const hashrate = convertHashrate(worker.hashrate1m);
+    return hashrate > 0;
+  }).length;
 };
 
 const convertHashrate = (hashrateStr: string) => {
