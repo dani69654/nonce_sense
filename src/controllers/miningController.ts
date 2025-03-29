@@ -57,6 +57,16 @@ export const getMiningStats = async () => {
       previousBestDiff = currentBestDiff;
     }
 
+    const offlineWorkers = workersData.worker.filter(worker => worker.offline);
+
+    if(offlineWorkers.length > 0)
+    {
+       let tempMessage = `\n\n 🚨 !!!WARNING!!! 🚨 `;
+       const workersNames = offlineWorkers.map(worker => worker.username).join(", ");
+       tempMessage += `${workersNames} OFFLINE!`;
+       message += tempMessage;
+    }
+
     return message;
   } catch {
     return 'Error fetching mining stats';

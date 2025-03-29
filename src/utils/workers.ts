@@ -1,4 +1,5 @@
 import { type MiningData } from '../types';
+import { ENV } from '../cfg/env';
 
 const UNITS: Record<string, number> = {
   T: 1e12,
@@ -37,7 +38,20 @@ export const computeWorkersData = (data: MiningData[]) => {
   const bestever = data.reduce((acc, worker) => Math.max(acc, worker.bestever), 0);
   const lastshare = Math.max(...data.map((worker) => worker.lastshare));
   const authorised = data.reduce((acc, worker) => acc + worker.authorised, 0);
-  const flattenedWorkers = data.map((miningData) => miningData.worker).flat();
+
+  const flattenedWorkers = data.map((miningData) =>
+    miningData.worker.map((wrkr) => {
+
+      const matchingWorker = ENV.WORKERS.find(
+        (envWorker: { name: string,  address: string; }) => envWorker.address === wrkr.workername.replace(".bitaxe", "")
+      );
+
+      wrkr.username = matchingWorker ? matchingWorker.name : wrkr.workername;
+      wrkr.offline = parseInt(wrkr.hashrate1m) == 0;
+      return wrkr;
+
+    })
+  ).flat();
 
   return {
     hashrate1m: String(aggregated1minHashrate),
@@ -51,6 +65,6 @@ export const computeWorkersData = (data: MiningData[]) => {
     bestshare,
     bestever,
     authorised,
-    worker: flattenedWorkers,
+    worker: flattenedWorkers
   };
 };
