@@ -1,4 +1,5 @@
 type Worker = {
+  username: string
   workername: string;
   hashrate1m: string;
   hashrate5m: string;
@@ -9,6 +10,7 @@ type Worker = {
   shares: number;
   bestshare: number;
   bestever: number;
+  offline: boolean;
 };
 
 export type MiningData = {

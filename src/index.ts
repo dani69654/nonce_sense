@@ -15,6 +15,7 @@ const sendMiningStats = async () => {
   if (!message) {
     return;
   }
+  
   await TELEGRAM.sendMessage(ENV.CHAT_ID, message, { parse_mode: 'Markdown' });
 };
 
