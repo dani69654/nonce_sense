@@ -8,7 +8,7 @@ const CHAIN_INFO_DIFF_ENDPOINT = 'getdifficulty';
 const CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT = 'getblockcount';
 
 export const fetchChainDiff = async () => {
-  await axios.get(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_DIFF_ENDPOINT}`).then((res) => {
+  return await axios.get(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_DIFF_ENDPOINT}`).then((res) => {
     return res.data;
   });
 };
