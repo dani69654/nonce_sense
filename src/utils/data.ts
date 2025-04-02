@@ -21,9 +21,13 @@ export const fetchBlockHeight = async () => {
 
 export const fetchWorkers = async (): Promise<MiningData[]> => {
   const promises = ENV.WORKERS.map((worker: { name: string; address: string }) => {
-    return axios.get(`${SOLO_CK_URL}/${worker.address}`).then((res) => {
-      return res.data;
-    });
+    return fetchWorker(worker.address);
   });
   return await Promise.all(promises);
+};
+
+export const fetchWorker = async (address: string): Promise<MiningData> => {
+  return await axios.get(`${SOLO_CK_URL}/${address}`).then((res) => {
+    return res.data;
+  });
 };

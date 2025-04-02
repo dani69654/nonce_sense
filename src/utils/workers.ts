@@ -17,7 +17,7 @@ export const verifyExpectedWorkers = (data: MiningData[]) => {
   }).length;
 };
 
-const convertHashrate = (hashrateStr: string) => {
+export const convertHashrate = (hashrateStr: string) => {
   const match = hashrateStr.match(/^([\d.]+)([TGMK])$/);
   if (!match) return parseFloat(hashrateStr);
   const [, numStr, unit] = match;
