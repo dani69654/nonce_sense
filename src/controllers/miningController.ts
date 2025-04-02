@@ -20,39 +20,34 @@ export const getMiningStats = async () => {
     const currentBestDiff = Number(workersData.bestever);
     const bestShare = formatNumber(currentBestDiff);
     const oneHourHashrate = formatNumber(Number(workersData.hashrate1hr));
+    const diffDisplay = difficulty ? formatNumber(difficulty) : 'N/A';
 
     let message = '';
 
-    if (currentBestDiff > previousBestDiff && previousBestDiff !== 0) {
+    if (difficulty && currentBestDiff >= Number(difficulty)) {
+      message =
+        `*BLOCK FOUND!!!* 🎉⛏️🚀 (${currentTime})\n\n` +
+        `*Network Difficulty:* ${diffDisplay} 🎯\n` +
+        `*Best Share:* ${bestShare} 🔥\n` +
+        `*1-Hour Hashrate:* ${oneHourHashrate}\n` +
+        `*Block Height:* ${blockHeight || 'N/A'} 🧱`;
+    } else if (currentBestDiff > previousBestDiff && previousBestDiff !== 0) {
       message =
         `*NEW BEST SHARE!* 🌟 (${currentTime})\n\n` +
-        `*Workers:* ${nWorkers}\n` +
+        `*Network Difficulty:* ${diffDisplay}\n` +
         `*New Best Share:* ${bestShare} 🚀\n` +
         `*Previous Best:* ${formatNumber(previousBestDiff)} 📈\n` +
         `*1-Hour Hashrate:* ${oneHourHashrate}`;
     } else {
       message =
-        `*Live Mining Stats* (${currentTime})\n\n` +
-        `*Workers:* ${nWorkers}\n` +
+        `*📢 LIVE MINING STATS* (${currentTime})\n\n` +
+        `*Network Difficulty:* ${diffDisplay}\n` +
         `*Best Share:* ${bestShare}\n` +
         `*1-Hour Hashrate:* ${oneHourHashrate}`;
     }
 
-    if (blockHeight) {
+    if (blockHeight && difficulty && currentBestDiff < Number(difficulty)) {
       message += `\n*Block Height:* ${blockHeight}`;
-    }
-    if (difficulty) {
-      message += `\n*Network Difficulty:* ${formatNumber(difficulty)}`;
-    }
-
-    if (difficulty && currentBestDiff >= Number(difficulty)) {
-      message =
-        `*BLOCK FOUND!!!* 🎉⛏️🚀 (${currentTime})\n\n` +
-        `*Workers:* ${nWorkers}\n` +
-        `*Best Share:* ${bestShare} 🔥\n` +
-        `*1-Hour Hashrate:* ${oneHourHashrate}\n` +
-        `*Network Difficulty:* ${formatNumber(difficulty)} 🎯\n` +
-        `*Block Height:* ${blockHeight || 'N/A'} 🧱`;
     }
 
     if (currentBestDiff > previousBestDiff) {
@@ -61,13 +56,11 @@ export const getMiningStats = async () => {
 
     if (activeWorkers < EXPECTED_WORKERS) {
       const inactive = workersRaw.find((worker) => worker.hashrate1m === '0');
-
       if (inactive) {
-        const inactiveWorkerName = ENV.WORKERS.find((worker: { name: string; address: string }) =>
+        const inactiveWorkerName = ENV.WORKERS.find((worker: { address: string; name: string }) =>
           inactive.worker[0].workername.includes(worker.address),
         )?.name;
-
-        message += `\n⚠️: ${inactiveWorkerName} offline!`;
+        message += `\n⚠️  ${inactiveWorkerName} seems to be offline!`;
       }
     }
 
