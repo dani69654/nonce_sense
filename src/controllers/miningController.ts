@@ -16,7 +16,6 @@ export const getMiningStats = async () => {
     const activeWorkers = verifyExpectedWorkers(workersRaw);
     const workersData = computeWorkersData(workersRaw);
     const currentTime = new Date().toLocaleString('it-IT');
-    const nWorkers = workersData.workers;
     const currentBestDiff = Number(workersData.bestever);
     const bestShare = formatNumber(currentBestDiff);
     const oneHourHashrate = formatNumber(Number(workersData.hashrate1hr));
