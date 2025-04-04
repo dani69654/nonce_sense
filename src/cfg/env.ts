@@ -15,4 +15,5 @@ export const ENV = {
   TG_TOKEN: requireEnv('TG_TOKEN'),
   CHAT_ID: requireEnv('CHAT_ID'),
   SERVER_URL: requireEnv('SERVER_URL'),
+  COINGECKO_API_KEY: requireEnv('COINGECKO_API_KEY'),
 };
