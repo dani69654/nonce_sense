@@ -1,5 +1,5 @@
 import { computeWorkersData, EXPECTED_WORKERS, verifyExpectedWorkers } from '../utils/workers';
-import { fetchBlockHeight, fetchChainDiff, fetchWorkers } from '../utils/data';
+import { fetchBlockHeight, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
 import { formatNumber } from '../utils/format';
 import { ENV } from '../cfg/env';
 
@@ -7,10 +7,11 @@ let previousBestDiff = 0;
 
 export const getMiningStats = async () => {
   try {
-    const [workersRaw, difficulty, blockHeight] = await Promise.all([
+    const [workersRaw, difficulty, blockHeight, btcUsdPrice] = await Promise.all([
       fetchWorkers(),
       fetchChainDiff().catch(() => null),
       fetchBlockHeight().catch(() => null),
+      fetchBtcPrice().catch(() => null),
     ]);
 
     const activeWorkers = verifyExpectedWorkers(workersRaw);
@@ -29,20 +30,23 @@ export const getMiningStats = async () => {
         `*Network Difficulty:* ${diffDisplay} 🎯\n` +
         `*Best Share:* ${bestShare} 🔥\n` +
         `*1-Hour Hashrate:* ${oneHourHashrate}\n` +
-        `*Block Height:* ${blockHeight || 'N/A'} 🧱`;
+        `*Block Height:* ${blockHeight || 'N/A'} 🧱` +
+        `\n*BTC Price:* ${btcUsdPrice} 💰`;
     } else if (currentBestDiff > previousBestDiff && previousBestDiff !== 0) {
       message =
         `*NEW BEST SHARE!* 🌟 (${currentTime})\n\n` +
         `*Network Difficulty:* ${diffDisplay}\n` +
         `*New Best Share:* ${bestShare} 🚀\n` +
         `*Previous Best:* ${formatNumber(previousBestDiff)} 📈\n` +
-        `*1-Hour Hashrate:* ${oneHourHashrate}`;
+        `*1-Hour Hashrate:* ${oneHourHashrate}` +
+        `\n*BTC Price:* ${btcUsdPrice} 💰`;
     } else {
       message =
         `*📢 LIVE MINING STATS* (${currentTime})\n\n` +
         `*Network Difficulty:* ${diffDisplay}\n` +
         `*Best Share:* ${bestShare}\n` +
-        `*1-Hour Hashrate:* ${oneHourHashrate}`;
+        `*1-Hour Hashrate:* ${oneHourHashrate}` +
+        `\n*BTC Price:* ${btcUsdPrice} 💰`;
     }
 
     if (blockHeight && difficulty && currentBestDiff < Number(difficulty)) {

@@ -4,3 +4,10 @@ export const formatNumber = (num: number) =>
     compactDisplay: 'short',
     maximumFractionDigits: 2,
   }).format(Number(num));
+
+export const formatUsd = (num: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(Number(num));
