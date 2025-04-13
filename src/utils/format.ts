@@ -9,5 +9,5 @@ export const formatUsd = (num: number) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(Number(num));

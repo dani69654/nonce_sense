@@ -11,7 +11,10 @@ export const getMiningStats = async () => {
       fetchWorkers(),
       fetchChainDiff().catch(() => null),
       fetchBlockHeight().catch(() => null),
-      fetchBtcPrice().catch(() => null),
+      fetchBtcPrice().catch((e) => {
+        console.error('Error fetching BTC price:', e);
+        return null;
+      }),
     ]);
 
     const activeWorkers = verifyExpectedWorkers(workersRaw);

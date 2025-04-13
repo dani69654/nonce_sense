@@ -39,7 +39,7 @@ export const fetchBtcPrice = async () => {
     .get(url, {
       headers: {
         'accept': 'application/json',
-        'x-cg-pro-api-key': ENV.COINGECKO_API_KEY,
+        'x-cg-api-key': ENV.COINGECKO_API_KEY,
       },
     })
     .then((res) => {
