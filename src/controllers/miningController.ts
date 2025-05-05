@@ -1,5 +1,5 @@
 import { computeWorkersData, EXPECTED_WORKERS, verifyExpectedWorkers } from '../utils/workers';
-import { fetchBlockHeight, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
+import { fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
 import { formatNumber } from '../utils/format';
 import { ENV } from '../cfg/env';
 
@@ -7,10 +7,9 @@ let previousBestDiff = 0;
 
 export const getMiningStats = async () => {
   try {
-    const [workersRaw, difficulty, blockHeight, btcUsdPrice] = await Promise.all([
+    const [workersRaw, difficulty, btcUsdPrice] = await Promise.all([
       fetchWorkers(),
       fetchChainDiff().catch(() => null),
-      fetchBlockHeight().catch(() => null),
       fetchBtcPrice().catch((e) => {
         console.error('Error fetching BTC price:', e);
         return null;
@@ -33,7 +32,6 @@ export const getMiningStats = async () => {
         `*Network Difficulty:* ${diffDisplay} 🎯\n` +
         `*Best Share:* ${bestShare} 🔥\n` +
         `*1-Hour Hashrate:* ${oneHourHashrate}\n` +
-        `*Block Height:* ${blockHeight || 'N/A'} 🧱` +
         `\n*BTC Price:* ${btcUsdPrice} 💰`;
     } else if (currentBestDiff > previousBestDiff && previousBestDiff !== 0) {
       message =
@@ -44,16 +42,11 @@ export const getMiningStats = async () => {
         `*1-Hour Hashrate:* ${oneHourHashrate}` +
         `\n*BTC Price:* ${btcUsdPrice} 💰`;
     } else {
+      const percentOfBest = ((currentBestDiff / Number(difficulty)) * 100).toFixed(5);
       message =
-        `*📢 LIVE MINING STATS* (${currentTime})\n\n` +
-        `*Network Difficulty:* ${diffDisplay}\n` +
-        `*Best Share:* ${bestShare}\n` +
-        `*1-Hour Hashrate:* ${oneHourHashrate}` +
-        `\n*BTC Price:* ${btcUsdPrice} 💰`;
-    }
-
-    if (blockHeight && difficulty && currentBestDiff < Number(difficulty)) {
-      message += `\n*Block Height:* ${blockHeight}`;
+        `🚀*Best Share:* ${bestShare} - ${percentOfBest}%\n` +
+        `⛏️*1-Hour Hashrate:* ${oneHourHashrate}\n` +
+        `💰*BTC Price:* ${btcUsdPrice}`;
     }
 
     if (currentBestDiff > previousBestDiff) {
