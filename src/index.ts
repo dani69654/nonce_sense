@@ -1,11 +1,11 @@
 import express from 'express';
 import { ENV } from './cfg/env';
-import { ONE_HOUR } from './utils/time';
 import routes from './routes';
 import { TELEGRAM } from './cfg/telegram';
 import { listenTelegramChat } from './controllers/telegramController';
 import { heartBeat } from './utils/beat';
 import { getMiningStats } from './controllers/miningController';
+import cron from 'node-cron';
 
 const app = express();
 app.use(routes);
@@ -19,10 +19,9 @@ const sendMiningStats = async () => {
 };
 
 const startSendingStats = () => {
-  sendMiningStats();
   listenTelegramChat();
   heartBeat();
-  setInterval(sendMiningStats, ONE_HOUR);
+  cron.schedule('0 0 */1 * * *', sendMiningStats);
 };
 
 app.listen(ENV.PORT, () => {

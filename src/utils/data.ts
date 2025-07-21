@@ -5,6 +5,7 @@ import { formatUsd } from './format';
 
 const SOLO_CK_URL = 'https://eusolo.ckpool.org/users';
 const CHAIN_INFO_BASE_URL = 'https://blockchain.info/q';
+const COINPAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1';
 const CHAIN_INFO_DIFF_ENDPOINT = 'getdifficulty';
 const CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT = 'getblockcount';
 
@@ -34,15 +35,13 @@ export const fetchWorker = async (address: string): Promise<MiningData> => {
 };
 
 export const fetchBtcPrice = async () => {
-  const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd';
   return await axios
-    .get(url, {
-      headers: {
-        'accept': 'application/json',
-        'x-cg-api-key': ENV.COINGECKO_API_KEY,
+    .get(`${COINPAPRIKA_BASE_URL}/tickers/btc-bitcoin`, {
+      params: {
+        quotes: 'USD',
       },
     })
     .then((res) => {
-      return formatUsd(res.data['bitcoin'].usd);
+      return formatUsd(res.data.quotes.USD.price);
     });
 };

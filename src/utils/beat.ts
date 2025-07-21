@@ -1,5 +1,9 @@
 import axios from 'axios';
 import { ENV } from '../cfg/env';
-import { ONE_MIN } from './time';
+import cron from 'node-cron';
 
-export const heartBeat = () => setInterval(() => axios.get(`${ENV.SERVER_URL}/heartbeat`).catch(), ONE_MIN);
+export const heartBeat = () => {
+  cron.schedule('* * * * *', () => {
+    axios.get(`${ENV.SERVER_URL}/heartbeat`).catch();
+  });
+};
