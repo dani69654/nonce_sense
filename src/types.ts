@@ -25,3 +25,6 @@ export type MiningData = {
   authorised: number;
   worker: Worker[];
 };
+
+export type FearAndGreedRes = { value: number; classification: string };
+export type EtfDataRes = { date: string; total: number };

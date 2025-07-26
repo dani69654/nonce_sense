@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { ENV } from '../cfg/env';
-import { type MiningData } from '../types';
+import { EtfDataRes, FearAndGreedRes, type MiningData } from '../types';
 import { formatUsd } from './format';
+import fetchEtfData from 'bitcoin-etf-data';
 
 const SOLO_CK_URL = 'https://eusolo.ckpool.org/users';
 const CHAIN_INFO_BASE_URL = 'https://blockchain.info/q';
@@ -44,4 +45,21 @@ export const fetchBtcPrice = async () => {
     .then((res) => {
       return formatUsd(res.data.quotes.USD.price);
     });
+};
+
+export const fearGreedIndexFetcher = async (): Promise<FearAndGreedRes> => {
+  const response = await axios.get('https://api.alternative.me/fng/');
+
+  return {
+    value: response.data.data[0].value,
+    classification: response.data.data[0].value_classification,
+  };
+};
+
+export const etfDataFetcher = async (): Promise<EtfDataRes | null> => {
+  const etfData = await fetchEtfData();
+  if (!etfData) {
+    return null;
+  }
+  return etfData[etfData.length - 1];
 };

@@ -1,5 +1,5 @@
 import { computeWorkersData, EXPECTED_WORKERS, verifyExpectedWorkers } from '../utils/workers';
-import { fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
+import { etfDataFetcher, fearGreedIndexFetcher, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
 import { formatNumber } from '../utils/format';
 import { ENV } from '../cfg/env';
 
@@ -7,13 +7,15 @@ let previousBestDiff = 0;
 
 export const getMiningStats = async () => {
   try {
-    const [workersRaw, difficulty, btcUsdPrice] = await Promise.all([
+    const [workersRaw, difficulty, btcUsdPrice, etfData, fearGreedIndex] = await Promise.all([
       fetchWorkers(),
       fetchChainDiff().catch(() => null),
       fetchBtcPrice().catch((e) => {
         console.error('Error fetching BTC price:', e);
         return null;
       }),
+      etfDataFetcher().catch(() => null),
+      fearGreedIndexFetcher().catch(() => null),
     ]);
 
     const activeWorkers = verifyExpectedWorkers(workersRaw);
@@ -47,6 +49,12 @@ export const getMiningStats = async () => {
         `🚀*Best Share:* ${bestShare} - ${percentOfBest}%\n` +
         `⛏️*1-Hour Hashrate:* ${oneHourHashrate}\n` +
         `💰*BTC Price:* ${btcUsdPrice}`;
+      if (etfData) {
+        message += `\n📊*ETF Data:* ${formatNumber(etfData.total)}`;
+      }
+      if (fearGreedIndex) {
+        message += `\n😱*Fear and Greed Index:* ${fearGreedIndex.value}/100`;
+      }
     }
 
     if (currentBestDiff > previousBestDiff) {
