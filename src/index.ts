@@ -22,7 +22,6 @@ const startSendingStats = () => {
   listenTelegramChat();
   heartBeat();
   cron.schedule('0 0 */1 * * *', sendMiningStats);
-  sendMiningStats();
 };
 
 app.listen(ENV.PORT, () => {
