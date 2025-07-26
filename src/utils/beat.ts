@@ -3,7 +3,7 @@ import { ENV } from '../cfg/env';
 import cron from 'node-cron';
 
 export const heartBeat = () => {
-  cron.schedule('* * * * *', () => {
+  cron.schedule('*/14 * * * *', () => {
     axios.get(`${ENV.SERVER_URL}/heartbeat`).catch();
   });
 };
