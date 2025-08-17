@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { ENV } from '../cfg/env';
-import cron from 'node-cron';
 
-export const heartBeat = () => {
-  cron.schedule('*/5 * * * *', () => {
-    axios.get(`${ENV.SERVER_URL}/heartbeat`).catch();
-  });
-};
+export const heartBeat = () =>
+  axios
+    .get(`${ENV.SERVER_URL}/heartbeat`)
+    .then(() => {
+      console.log('Beat successful 💖');
+    })
+    .catch(() => {
+      console.error('Beat failed 💔');
+    });

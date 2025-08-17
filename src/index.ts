@@ -20,7 +20,7 @@ const sendMiningStats = async () => {
 
 const startSendingStats = () => {
   listenTelegramChat();
-  heartBeat();
+  cron.schedule('*/5 * * * *', heartBeat);
   cron.schedule('0 0 */1 * * *', sendMiningStats);
 };
 
