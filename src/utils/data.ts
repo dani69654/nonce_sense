@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ENV } from '../cfg/env';
 import { EtfDataRes, FearAndGreedRes, type MiningData } from '../types';
 import { formatUsd } from './format';
@@ -11,15 +10,13 @@ const CHAIN_INFO_DIFF_ENDPOINT = 'getdifficulty';
 const CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT = 'getblockcount';
 
 export const fetchChainDiff = async () => {
-  return await axios.get(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_DIFF_ENDPOINT}`).then((res) => {
-    return res.data;
-  });
+  const response = await fetch(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_DIFF_ENDPOINT}`);
+  return await response.text();
 };
 
 export const fetchBlockHeight = async () => {
-  return await axios.get(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT}`).then((res) => {
-    return res.data;
-  });
+  const response = await fetch(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT}`);
+  return await response.text();
 };
 
 export const fetchWorkers = async (): Promise<MiningData[]> => {
@@ -30,29 +27,26 @@ export const fetchWorkers = async (): Promise<MiningData[]> => {
 };
 
 export const fetchWorker = async (address: string): Promise<MiningData> => {
-  return await axios.get(`${SOLO_CK_URL}/${address}`).then((res) => {
-    return res.data;
-  });
+  const response = await fetch(`${SOLO_CK_URL}/${address}`);
+  return await response.json();
 };
 
 export const fetchBtcPrice = async () => {
-  return await axios
-    .get(`${COINPAPRIKA_BASE_URL}/tickers/btc-bitcoin`, {
-      params: {
-        quotes: 'USD',
-      },
-    })
-    .then((res) => {
-      return formatUsd(res.data.quotes.USD.price);
-    });
+  const url = new URL(`${COINPAPRIKA_BASE_URL}/tickers/btc-bitcoin`);
+  url.searchParams.append('quotes', 'USD');
+
+  const response = await fetch(url.toString());
+  const data = await response.json();
+  return formatUsd(data.quotes.USD.price);
 };
 
 export const fearGreedIndexFetcher = async (): Promise<FearAndGreedRes> => {
-  const response = await axios.get('https://api.alternative.me/fng/');
+  const response = await fetch('https://api.alternative.me/fng/');
+  const data = await response.json();
 
   return {
-    value: response.data.data[0].value,
-    classification: response.data.data[0].value_classification,
+    value: data.data[0].value,
+    classification: data.data[0].value_classification,
   };
 };
 

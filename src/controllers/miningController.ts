@@ -24,11 +24,11 @@ export const getMiningStats = async () => {
     const currentBestDiff = Number(workersData.bestever);
     const bestShare = formatNumber(currentBestDiff);
     const oneHourHashrate = formatNumber(Number(workersData.hashrate1hr));
-    const diffDisplay = difficulty ? formatNumber(difficulty) : 'N/A';
+    const diffDisplay = typeof difficulty === 'number' ? formatNumber(difficulty) : 'N/A';
 
     let message = '';
 
-    if (difficulty && currentBestDiff >= Number(difficulty)) {
+    if (typeof difficulty === 'number' && currentBestDiff >= difficulty) {
       message =
         `*BLOCK FOUND!!!* 🎉⛏️🚀 (${currentTime})\n\n` +
         `*Network Difficulty:* ${diffDisplay} 🎯\n` +
