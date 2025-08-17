@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:prod": "esbuild src/index.ts --bundle --platform=node --minify --target=node20 --outfile=dist/index.js --external:express --external:node-telegram-bot-api",
+    "build:prod": "node esbuild.config.js",
     "start": "npm run build:prod && node dist/index.js",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "fmt": "prettier --write ."
+    "fmt": "prettier --write .",
+    "size": "npm run build:prod && ls -lh dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,13 +23,10 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@types/express": "^5.0.1",
-    "@types/node-cron": "^3.0.11",
-    "bitcoin-etf-data": "^1.0.6",
+    "bitcoin-etf-data": "^1.0.8",
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
     "node-cron": "^4.2.1",
-    "node-telegram-bot-api": "^0.66.0",
-    "tough-cookie": "^2.5.0"
+    "node-telegram-bot-api": "^0.66.0"
   }
 }

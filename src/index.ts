@@ -25,6 +25,8 @@ const startSendingStats = () => {
 };
 
 app.listen(ENV.PORT, () => {
-  console.log(`Server is running on port: ${ENV.PORT}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Server is running on port: ${ENV.PORT}`);
+  }
   startSendingStats();
 });
