@@ -5,7 +5,6 @@ import { TELEGRAM } from './cfg/telegram';
 import { listenTelegramChat } from './controllers/telegramController';
 import { heartBeat } from './utils/beat';
 import { getMiningStats } from './controllers/miningController';
-import cron from 'node-cron';
 
 const app = express();
 app.use(routes);
@@ -20,8 +19,10 @@ const sendMiningStats = async () => {
 
 const startSendingStats = () => {
   listenTelegramChat();
-  cron.schedule('*/5 * * * *', heartBeat);
-  cron.schedule('0 0 */1 * * *', sendMiningStats);
+  // Heartbeat every 5 minutes (300000 ms)
+  setInterval(heartBeat, 5 * 60 * 1000);
+  // Mining stats every hour (3600000 ms)
+  setInterval(sendMiningStats, 60 * 60 * 1000);
 };
 
 app.listen(ENV.PORT, () => {

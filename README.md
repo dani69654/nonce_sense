@@ -29,7 +29,7 @@ Nonce Sense is a comprehensive Bitcoin mining statistics monitoring tool built w
 
 - **Express.js Server**: RESTful API endpoints
 - **Heartbeat Monitoring**: Health check endpoint for uptime monitoring
-- **Scheduled Tasks**: Automated statistics reporting via cron jobs
+- **Scheduled Tasks**: Automated statistics reporting via setInterval
 
 ## 🛠️ Technology Stack
 
@@ -37,7 +37,7 @@ Nonce Sense is a comprehensive Bitcoin mining statistics monitoring tool built w
 - **Web Framework**: Express.js
 - **Build Tool**: esbuild for production builds
 - **Telegram Integration**: node-telegram-bot-api
-- **Scheduling**: node-cron
+- **Scheduling**: Native setInterval
 - **HTTP Client**: Native fetch API
 - **Data Sources**: CKPool, Blockchain.info, Coinpaprika, Alternative.me
 

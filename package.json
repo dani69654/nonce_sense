@@ -27,7 +27,6 @@
     "bitcoin-etf-data": "2.0.0",
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
-    "node-cron": "^4.2.1",
     "node-telegram-bot-api": "^0.66.0"
   }
 }

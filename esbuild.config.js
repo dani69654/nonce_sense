@@ -11,7 +11,7 @@ esbuild
     treeShaking: true,
     drop: ['console', 'debugger'],
     format: 'cjs',
-    external: ['express', 'node-telegram-bot-api', 'node-cron', 'dotenv', 'bitcoin-etf-data'],
+    external: ['express', 'node-telegram-bot-api', 'dotenv', 'bitcoin-etf-data'],
     define: {
       'process.env.NODE_ENV': '"production"',
     },
