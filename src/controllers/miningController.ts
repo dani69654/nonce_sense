@@ -63,7 +63,7 @@ export const getMiningStats = async () => {
 
     if (activeWorkers < EXPECTED_WORKERS) {
       const inactive = workersRaw.find((worker) => worker.hashrate1m === '0');
-      if (inactive) {
+      if (inactive && inactive.worker.length) {
         const inactiveWorkerName = ENV.WORKERS.find((worker: { address: string; name: string }) =>
           inactive.worker[0].workername.includes(worker.address),
         )?.name;
@@ -72,7 +72,8 @@ export const getMiningStats = async () => {
     }
 
     return message;
-  } catch {
+  } catch (e) {
+    console.error('Error fetching mining stats:', e);
     return 'Error fetching mining stats';
   }
 };
