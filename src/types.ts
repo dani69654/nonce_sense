@@ -28,3 +28,9 @@ export type MiningData = {
 
 export type FearAndGreedRes = { value: number; classification: string };
 export type EtfDataRes = { date: string; total: number };
+
+export type ConfigWorker = {
+  name: string;
+  address: string;
+  telegramId?: number;
+};

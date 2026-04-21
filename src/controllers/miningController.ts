@@ -2,8 +2,24 @@ import { computeWorkersData, EXPECTED_WORKERS, verifyExpectedWorkers } from '../
 import { etfDataFetcher, fearGreedIndexFetcher, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
 import { formatNumber } from '../utils/format';
 import { ENV } from '../cfg/env';
+import { TELEGRAM } from '../cfg/telegram';
 
 let previousBestDiff = 0;
+const offlineNotified = new Set<string>();
+
+const notifyOfflineWorker = async (worker: { name: string; address: string; telegramId?: number }) => {
+  if (!worker.telegramId) {
+    return;
+  }
+  try {
+    await TELEGRAM.sendMessage(
+      worker.telegramId,
+      `⚠️ Hey ${worker.name}, your miner (${worker.address}) seems to be offline!`,
+    );
+  } catch (e) {
+    console.error(`Failed to DM offline worker ${worker.name} (${worker.telegramId}):`, e);
+  }
+};
 
 export const getMiningStats = async () => {
   try {
@@ -61,15 +77,27 @@ export const getMiningStats = async () => {
       previousBestDiff = currentBestDiff;
     }
 
-    if (activeWorkers < EXPECTED_WORKERS) {
-      const inactive = workersRaw.find((worker) => worker.hashrate1m === '0');
-      if (inactive && inactive.worker.length) {
-        const inactiveWorkerName = ENV.WORKERS.find((worker: { address: string; name: string }) =>
-          inactive.worker[0].workername.includes(worker.address),
-        )?.name;
-        message += `\n⚠️  ${inactiveWorkerName} seems to be offline!`;
+    const stillOffline = new Set<string>();
+    workersRaw.forEach((miningData) => {
+      if (miningData.hashrate1m !== '0' || !miningData.worker.length) {
+        return;
       }
-    }
+      const configWorker = ENV.WORKERS.find((w) => miningData.worker[0].workername.includes(w.address));
+      if (!configWorker) {
+        return;
+      }
+      stillOffline.add(configWorker.address);
+      message += `\n⚠️  ${configWorker.name} seems to be offline!`;
+      if (!offlineNotified.has(configWorker.address)) {
+        offlineNotified.add(configWorker.address);
+        void notifyOfflineWorker(configWorker);
+      }
+    });
+    offlineNotified.forEach((address) => {
+      if (!stillOffline.has(address)) {
+        offlineNotified.delete(address);
+      }
+    });
 
     return message;
   } catch (e) {

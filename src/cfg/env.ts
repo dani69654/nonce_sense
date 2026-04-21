@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import type { ConfigWorker } from '../types';
 dotenv.config();
 
 const requireEnv = (name: string) => {
@@ -11,7 +12,7 @@ const requireEnv = (name: string) => {
 
 export const ENV = {
   PORT: parseInt(requireEnv('PORT')),
-  WORKERS: JSON.parse(requireEnv('WORKERS')),
+  WORKERS: JSON.parse(requireEnv('WORKERS')) as ConfigWorker[],
   TG_TOKEN: requireEnv('TG_TOKEN'),
   CHAT_ID: requireEnv('CHAT_ID'),
   SERVER_URL: requireEnv('SERVER_URL'),

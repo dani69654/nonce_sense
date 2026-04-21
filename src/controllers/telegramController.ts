@@ -6,6 +6,10 @@ import { convertHashrate } from '../utils/workers';
 import { getMiningStats } from './miningController';
 
 export const listenTelegramChat = () => {
+  TELEGRAM.onText(/\/myid/, (msg) => {
+    TELEGRAM.sendMessage(msg.chat.id, `Your Telegram ID: \`${msg.chat.id}\``, { parse_mode: 'Markdown' });
+  });
+
   TELEGRAM.onText(/\/stats/, (msg) => {
     const chatId = msg.chat.id;
     const options = {
