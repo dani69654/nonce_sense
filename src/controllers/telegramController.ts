@@ -5,12 +5,20 @@ import { formatNumber } from '../utils/format';
 import { convertHashrate } from '../utils/workers';
 import { getMiningStats } from './miningController';
 
+const isAllowedChat = (chatId: number) => String(chatId) === ENV.CHAT_ID;
+
 export const listenTelegramChat = () => {
   TELEGRAM.onText(/\/myid/, (msg) => {
+    if (!isAllowedChat(msg.chat.id)) {
+      return;
+    }
     TELEGRAM.sendMessage(msg.chat.id, `Your Telegram ID: \`${msg.chat.id}\``, { parse_mode: 'Markdown' });
   });
 
   TELEGRAM.onText(/\/stats/, (msg) => {
+    if (!isAllowedChat(msg.chat.id)) {
+      return;
+    }
     const chatId = msg.chat.id;
     const options = {
       reply_markup: {
@@ -32,7 +40,7 @@ export const listenTelegramChat = () => {
     const msg = callbackQuery.message;
     const data = callbackQuery.data;
 
-    if (!msg || !data) {
+    if (!msg || !data || !isAllowedChat(msg.chat.id)) {
       return;
     }
 
