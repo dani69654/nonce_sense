@@ -60,7 +60,8 @@ export const getMiningStats = async () => {
         `*1-Hour Hashrate:* ${oneHourHashrate}` +
         `\n*BTC Price:* ${btcUsdPrice} 💰`;
     } else {
-      const percentOfBest = ((currentBestDiff / Number(difficulty)) * 100).toFixed(5);
+      const percentOfBest =
+        typeof difficulty === 'number' ? ((currentBestDiff / difficulty) * 100).toFixed(5) : 'N/A';
       message =
         `🚀*Best Share:* ${bestShare} - ${percentOfBest}%\n` +
         `⛏️*1-Hour Hashrate:* ${oneHourHashrate}\n` +

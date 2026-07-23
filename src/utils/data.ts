@@ -9,9 +9,16 @@ const COINPAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1';
 const CHAIN_INFO_DIFF_ENDPOINT = 'getdifficulty';
 const CHAIN_INFO_BLOCK_HEIGHT_ENDPOINT = 'getblockcount';
 
-export const fetchChainDiff = async () => {
+export const fetchChainDiff = async (): Promise<number> => {
   const response = await fetch(`${CHAIN_INFO_BASE_URL}/${CHAIN_INFO_DIFF_ENDPOINT}`);
-  return await response.text();
+  if (!response.ok) {
+    throw new Error(`Failed to fetch chain difficulty: ${response.status}`);
+  }
+  const difficulty = Number(await response.text());
+  if (!Number.isFinite(difficulty)) {
+    throw new Error('Invalid chain difficulty response');
+  }
+  return difficulty;
 };
 
 export const fetchBlockHeight = async () => {
