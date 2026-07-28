@@ -1,3 +1,28 @@
+import type { ConfigWorker, PoolId } from '../types';
+
+export const poolLabel = (pool?: PoolId): string => {
+  switch (pool ?? 'ckpool') {
+    case 'publicpool':
+      return 'Public Pool';
+    case 'ckpool':
+    default:
+      return 'CKPool';
+  }
+};
+
+export const poolShortLabel = (pool?: PoolId): string => {
+  switch (pool ?? 'ckpool') {
+    case 'publicpool':
+      return 'PP';
+    case 'ckpool':
+    default:
+      return 'CK';
+  }
+};
+
+export const workerKey = (worker: Pick<ConfigWorker, 'address' | 'pool'>): string =>
+  `${worker.pool ?? 'ckpool'}:${worker.address}`;
+
 export const formatNumber = (num: number) => {
   const abs = Math.abs(num);
 
