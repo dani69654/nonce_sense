@@ -1,4 +1,4 @@
-import { computeWorkersData, EXPECTED_WORKERS, verifyExpectedWorkers } from '../utils/workers';
+import { computeWorkersData, convertHashrate, EXPECTED_WORKERS, verifyExpectedWorkers } from '../utils/workers';
 import { etfDataFetcher, fearGreedIndexFetcher, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
 import { formatNumber } from '../utils/format';
 import { ENV } from '../cfg/env';
@@ -79,12 +79,9 @@ export const getMiningStats = async () => {
     }
 
     const stillOffline = new Set<string>();
-    workersRaw.forEach((miningData) => {
-      if (miningData.hashrate1m !== '0' || !miningData.worker.length) {
-        return;
-      }
-      const configWorker = ENV.WORKERS.find((w) => miningData.worker[0].workername.includes(w.address));
-      if (!configWorker) {
+    workersRaw.forEach((miningData, index) => {
+      const configWorker = ENV.WORKERS[index];
+      if (!configWorker || convertHashrate(miningData.hashrate1m) > 0) {
         return;
       }
       stillOffline.add(configWorker.address);

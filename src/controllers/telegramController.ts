@@ -53,9 +53,9 @@ export const listenTelegramChat = () => {
       });
     }
 
-    const worker = ENV.WORKERS.find((worker: { address: string }) => worker.address === data);
+    const worker = ENV.WORKERS.find((w) => w.address === data);
 
-    fetchWorker(data).then((workerData) => {
+    fetchWorker(data, worker?.pool ?? 'ckpool').then((workerData) => {
       if (!workerData) {
         return;
       }
