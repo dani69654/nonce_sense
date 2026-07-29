@@ -8,14 +8,24 @@ const UNITS: Record<string, number> = {
   K: 1e3,
 };
 
-export const EXPECTED_WORKERS = ENV.WORKERS.length;
+/** Unique miner identities (one address = one miner, even if listed on multiple pools). */
+export const expectedMiners = (): number => new Set(ENV.WORKERS.map((w) => w.address)).size;
 
-export const verifyExpectedWorkers = (data: MiningData[]) => {
-  return data.filter((worker) => {
-    const hashrate = convertHashrate(worker.hashrate1m);
-    return hashrate > 0;
-  }).length;
+export const EXPECTED_WORKERS = expectedMiners();
+
+/** Addresses with hashrate > 0 on at least one configured pool. */
+export const onlineAddresses = (data: MiningData[]): Set<string> => {
+  const online = new Set<string>();
+  data.forEach((worker, index) => {
+    const config = ENV.WORKERS[index];
+    if (config && convertHashrate(worker.hashrate1m) > 0) {
+      online.add(config.address);
+    }
+  });
+  return online;
 };
+
+export const verifyExpectedWorkers = (data: MiningData[]) => onlineAddresses(data).size;
 
 export const convertHashrate = (hashrateStr: string) => {
   const match = hashrateStr.match(/^([\d.]+)([TGMK])$/);

@@ -1,6 +1,12 @@
-import { computeWorkersData, convertHashrate, verifyExpectedWorkers } from '../utils/workers';
+import {
+  computeWorkersData,
+  convertHashrate,
+  expectedMiners,
+  onlineAddresses,
+  verifyExpectedWorkers,
+} from '../utils/workers';
 import { etfDataFetcher, fearGreedIndexFetcher, fetchBtcPrice, fetchChainDiff, fetchWorkers } from '../utils/data';
-import { formatNumber, poolLabel, workerKey } from '../utils/format';
+import { formatNumber, minerKey, poolLabel } from '../utils/format';
 import { ENV } from '../cfg/env';
 import { TELEGRAM } from '../cfg/telegram';
 import type { ConfigWorker } from '../types';
@@ -15,7 +21,7 @@ const notifyOfflineWorker = async (worker: ConfigWorker) => {
   try {
     await TELEGRAM.sendMessage(
       worker.telegramId,
-      `⚠️ Hey ${worker.name}, your miner on ${poolLabel(worker.pool)} (${worker.address}) seems to be offline!`,
+      `⚠️ Hey ${worker.name}, your miner (${worker.address}) seems to be offline on all configured pools!`,
     );
   } catch (e) {
     console.error(`Failed to DM offline worker ${worker.name} (${worker.telegramId}):`, e);
@@ -36,6 +42,7 @@ export const getMiningStats = async () => {
     ]);
 
     const activeWorkers = verifyExpectedWorkers(workersRaw);
+    const online = onlineAddresses(workersRaw);
     const workersData = computeWorkersData(workersRaw);
     const currentTime = new Date().toLocaleString('it-IT');
     const currentBestDiff = Number(workersData.bestever);
@@ -69,7 +76,7 @@ export const getMiningStats = async () => {
         `🚀*Best Share:* ${bestShare} - ${percentOfBest}%\n` +
         `⛏️*Hashrate (1m):* ${oneMinHashrate}\n` +
         `⛏️*Hashrate (1h):* ${oneHourHashrate}\n` +
-        `👷*Active:* ${activeWorkers}/${ENV.WORKERS.length}\n` +
+        `👷*Active:* ${activeWorkers}/${expectedMiners()}\n` +
         `💰*BTC Price:* ${btcUsdPrice}`;
       if (etfData) {
         message += `\n📊*ETF Data:* ${formatNumber(etfData.total)}`;
@@ -87,7 +94,9 @@ export const getMiningStats = async () => {
       }
       const hr = formatNumber(convertHashrate(miningData.hashrate1m));
       const best = formatNumber(Number(miningData.bestever));
-      const status = convertHashrate(miningData.hashrate1m) > 0 ? 'online' : 'offline';
+      const onThisPool = convertHashrate(miningData.hashrate1m) > 0;
+      // Same address mines one pool at a time: not on this pool ≠ offline miner.
+      const status = onThisPool ? 'online' : online.has(configWorker.address) ? 'idle' : 'offline';
       message += `\n• ${poolLabel(configWorker.pool)} (${configWorker.name}): ${hr} · best ${best} · ${status}`;
     });
 
@@ -95,15 +104,20 @@ export const getMiningStats = async () => {
       previousBestDiff = currentBestDiff;
     }
 
+    // Alert only when a miner is down on every configured pool for that address.
     const stillOffline = new Set<string>();
-    workersRaw.forEach((miningData, index) => {
-      const configWorker = ENV.WORKERS[index];
-      if (!configWorker || convertHashrate(miningData.hashrate1m) > 0) {
+    const seenAddresses = new Set<string>();
+    ENV.WORKERS.forEach((configWorker) => {
+      if (seenAddresses.has(configWorker.address)) {
         return;
       }
-      const key = workerKey(configWorker);
+      seenAddresses.add(configWorker.address);
+      if (online.has(configWorker.address)) {
+        return;
+      }
+      const key = minerKey(configWorker);
       stillOffline.add(key);
-      message += `\n⚠️  ${configWorker.name} @ ${poolLabel(configWorker.pool)} seems to be offline!`;
+      message += `\n⚠️  ${configWorker.name} seems to be offline!`;
       if (!offlineNotified.has(key)) {
         offlineNotified.add(key);
         void notifyOfflineWorker(configWorker);

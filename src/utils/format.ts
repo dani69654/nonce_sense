@@ -20,8 +20,8 @@ export const poolShortLabel = (pool?: PoolId): string => {
   }
 };
 
-export const workerKey = (worker: Pick<ConfigWorker, 'address' | 'pool'>): string =>
-  `${worker.pool ?? 'ckpool'}:${worker.address}`;
+/** Identity for offline alerts: one address = one miner across pools. */
+export const minerKey = (worker: Pick<ConfigWorker, 'address'>): string => worker.address;
 
 export const formatNumber = (num: number) => {
   const abs = Math.abs(num);
