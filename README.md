@@ -6,7 +6,7 @@ Nonce Sense is a comprehensive Bitcoin mining statistics monitoring tool built w
 
 ### Core Monitoring
 
-- **Real-time Mining Statistics**: Fetches live data from CKPool solo mining pool
+- **Real-time Mining Statistics**: Fetches live data from CKPool, Public Pool, and BTC PoW Lab
 - **Worker Activity Monitoring**: Tracks individual worker performance and alerts on offline workers
 - **Network Metrics**: Monitors Bitcoin network difficulty and block height
 - **Market Data Integration**: Real-time BTC price, Fear & Greed Index, and Bitcoin ETF data
@@ -60,7 +60,7 @@ Nonce Sense is a comprehensive Bitcoin mining statistics monitoring tool built w
    Create a `.env` file in the root directory with the following variables:
    ```env
    PORT=3000
-   WORKERS=[{"name":"Worker1","address":"your_btc_address_1"},{"name":"Worker2","address":"your_btc_address_2"}]
+  WORKERS=[{"name":"Worker1","address":"your_btc_address_1","pool":"ckpool"},{"name":"Worker2","address":"your_btc_address_2","pool":"btcpowlab"}]
    TG_TOKEN=your_telegram_bot_token
    CHAT_ID=your_telegram_chat_id
    SERVER_URL=http://localhost:3000
@@ -132,6 +132,8 @@ src/
 ### Mining Data
 
 - **CKPool Solo Mining**: `https://eusolo.ckpool.org/users/{address}`
+- **Public Pool**: `https://public-pool.io:40557/api/client/{address}`
+- **BTC PoW Lab**: `https://btcpowlab-pool.com/public/v1/miner/{address}/summary`
 - Fetches worker statistics, hashrates, and share information
 
 ### Network Data
@@ -182,10 +184,13 @@ The system monitors multiple Bitcoin mining workers by:
 [
   {
     "name": "Worker Name",
-    "address": "Bitcoin Address"
+    "address": "Bitcoin Address",
+    "pool": "btcpowlab"
   }
 ]
 ```
+
+Supported pool values are `ckpool`, `publicpool`, and `btcpowlab`.
 
 ## 🚀 Deployment
 

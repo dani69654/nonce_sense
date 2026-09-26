@@ -2,6 +2,7 @@ import { ENV } from '../cfg/env';
 import {
   EtfDataRes,
   FearAndGreedRes,
+  type BtcPowLabSummary,
   type MiningData,
   type PoolId,
   type PublicPoolClientResponse,
@@ -11,6 +12,7 @@ import fetchEtfData from 'bitcoin-etf-data';
 
 const SOLO_CK_URL = 'https://eusolo.ckpool.org/users';
 const PUBLIC_POOL_URL = 'https://public-pool.io:40557/api/client';
+const BTC_POW_LAB_URL = 'https://btcpowlab-pool.com/public/v1/miner';
 const CHAIN_INFO_BASE_URL = 'https://blockchain.info/q';
 const COINOBRIKA_BASE_URL = 'https://api.coinpaprika.com/v1';
 const CHAIN_INFO_DIFF_ENDPOINT = 'getdifficulty';
@@ -77,6 +79,35 @@ const mapPublicPoolToMiningData = (data: PublicPoolClientResponse): MiningData =
   };
 };
 
+export const mapBtcPowLabToMiningData = (data: BtcPowLabSummary): MiningData => {
+  const best = Number(data.best_share_difficulty) || 0;
+  return {
+    hashrate1m: hashrateToString(data.current_hashrate_hs ?? undefined),
+    hashrate5m: hashrateToString(data.hashrate_5m_hs ?? undefined),
+    hashrate1hr: hashrateToString(data.hashrate_1h_hs ?? undefined),
+    hashrate1d: hashrateToString(data.hashrate_24h_hs ?? undefined),
+    hashrate7d: '0',
+    lastshare: data.last_share_at ?? 0,
+    workers: data.active_sessions,
+    shares: data.accepted_shares,
+    bestshare: best,
+    bestever: best,
+    authorised: data.connected ? data.active_sessions : 0,
+    worker: data.workers.map((worker) => ({
+      workername: worker.name,
+      hashrate1m: hashrateToString(worker.hashrate_5m_hs ?? undefined),
+      hashrate5m: hashrateToString(worker.hashrate_5m_hs ?? undefined),
+      hashrate1hr: hashrateToString(worker.hashrate_1h_hs ?? undefined),
+      hashrate1d: '0',
+      hashrate7d: '0',
+      lastshare: worker.last_share_at ?? 0,
+      shares: worker.accepted_shares,
+      bestshare: 0,
+      bestever: 0,
+    })),
+  };
+};
+
 const fetchCkPoolWorker = async (address: string): Promise<MiningData> => {
   const response = await fetch(`${SOLO_CK_URL}/${address}`);
   if (!response.ok) {
@@ -92,6 +123,14 @@ const fetchPublicPoolWorker = async (address: string): Promise<MiningData> => {
   }
   const data = (await response.json()) as PublicPoolClientResponse;
   return mapPublicPoolToMiningData(data);
+};
+
+const fetchBtcPowLabWorker = async (address: string): Promise<MiningData> => {
+  const response = await fetch(`${BTC_POW_LAB_URL}/${encodeURIComponent(address)}/summary`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch BTC PoW Lab worker: ${response.status}`);
+  }
+  return mapBtcPowLabToMiningData((await response.json()) as BtcPowLabSummary);
 };
 
 export const fetchChainDiff = async (): Promise<number> => {
@@ -118,6 +157,9 @@ export const fetchWorkers = async (): Promise<MiningData[]> => {
 export const fetchWorker = async (address: string, pool: PoolId = 'ckpool'): Promise<MiningData> => {
   if (pool === 'publicpool') {
     return fetchPublicPoolWorker(address);
+  }
+  if (pool === 'btcpowlab') {
+    return fetchBtcPowLabWorker(address);
   }
   return fetchCkPoolWorker(address);
 };
