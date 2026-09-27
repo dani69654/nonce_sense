@@ -2,6 +2,8 @@ import type { ConfigWorker, PoolId } from '../types';
 
 export const poolLabel = (pool?: PoolId): string => {
   switch (pool ?? 'ckpool') {
+    case 'btcpowlab':
+      return 'BTC PoW Lab';
     case 'publicpool':
       return 'Public Pool';
     case 'ckpool':
@@ -12,6 +14,8 @@ export const poolLabel = (pool?: PoolId): string => {
 
 export const poolShortLabel = (pool?: PoolId): string => {
   switch (pool ?? 'ckpool') {
+    case 'btcpowlab':
+      return 'BPL';
     case 'publicpool':
       return 'PP';
     case 'ckpool':

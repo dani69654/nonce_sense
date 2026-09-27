@@ -1,4 +1,4 @@
-export type PoolId = 'ckpool' | 'publicpool';
+export type PoolId = 'ckpool' | 'publicpool' | 'btcpowlab';
 
 type Worker = {
   workername: string;
@@ -62,6 +62,29 @@ export type PublicPoolClientResponse = {
   workers: PublicPoolWorker[];
   accounting?: PublicPoolAccounting;
   expectedPayout?: number | null;
+};
+
+export type BtcPowLabWorker = {
+  name: string;
+  accepted_shares: number;
+  rejected_shares: number;
+  hashrate_5m_hs: number | null;
+  hashrate_1h_hs: number | null;
+  last_share_at: number | null;
+};
+
+export type BtcPowLabSummary = {
+  schema_version: number;
+  connected: boolean;
+  active_sessions: number;
+  current_hashrate_hs: number | null;
+  hashrate_5m_hs: number | null;
+  hashrate_1h_hs: number | null;
+  hashrate_24h_hs: number | null;
+  accepted_shares: number;
+  best_share_difficulty: string | null;
+  last_share_at: number | null;
+  workers: BtcPowLabWorker[];
 };
 
 export type FearAndGreedRes = { value: number; classification: string };
